@@ -1,16 +1,20 @@
-import * as cdk from 'aws-cdk-lib';
+import { Stack, StackProps } from "aws-cdk-lib";
 import { Construct } from 'constructs';
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { FunctionUrlAuthType, HttpMethod } from "aws-cdk-lib/aws-lambda";
 
-export class HieroRubyStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+export class HieroRubyStack extends Stack {
+  constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
+    const url = new lambda.Function(this, 'MyFunction', {
+      runtime: lambda.Runtime.RUBY_2_7,
+      handler: 'main.lambda_handler',
+      code: lambda.Code.fromAsset('./app'),
+    });
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'HieroRubyQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
+    url.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+    });
   }
 }
